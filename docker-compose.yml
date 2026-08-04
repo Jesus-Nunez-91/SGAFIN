@@ -1,0 +1,59 @@
+services:
+  db:
+    image: postgres:15-alpine
+    container_name: sgafin_db
+    restart: always
+    env_file:
+      - .env
+    environment:
+      POSTGRES_USER: ${DB_USERNAME}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
+    # Seguridad: Evita que la DB sea accesible desde fuera del host
+    # ports:
+    #   - "${DB_PORT_STAGING}:5432"
+    volumes:
+      - ./data/db_staging:/var/lib/postgresql/data
+    networks:
+      - sgafin_net
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: sgafin_app
+    restart: always
+    ports:
+      - "3050:3050"
+    depends_on:
+      - db
+    env_file:
+      - .env
+    environment:
+      - DB_HOST=db
+      - DB_PORT=5432
+      - NODE_ENV=production
+      - RECAPTCHA_SITE_KEY=${RECAPTCHA_SITE_KEY}
+      - RECAPTCHA_SECRET_KEY=${RECAPTCHA_SECRET_KEY}
+    networks:
+      - sgafin_net
+    # Seguridad: Solo lectura en el sistema de archivos
+    read_only: true
+    tmpfs:
+      - /tmp
+      - /var/run:mode=1777
+      - /app/logs:mode=1777
+    volumes:
+      - ./backend/ssl:/app/dist-server/backend/ssl:ro
+      - ./data/secure_exams:/app/secure_exams
+    # Seguridad: Quitar capacidades innecesarias
+    cap_drop:
+      - ALL
+    cap_add:
+      - CHOWN
+      - SETUID
+      - SETGID
+
+networks:
+  sgafin_net:
+    driver: bridge
