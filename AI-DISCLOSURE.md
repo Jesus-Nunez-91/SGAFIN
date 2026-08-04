@@ -1,4 +1,4 @@
-# AI Disclosure - SGA Pro
+# AI Disclosure - SGA FIN
 
 Este proyecto ha sido desarrollado con el apoyo de herramientas de Inteligencia Artificial Avanzada.
 

@@ -18,9 +18,9 @@ Se ha incluido un script automatizado `scripts/backup.sh` que genera un volcado 
 Si necesitas ejecutar el respaldo de forma completamente manual:
 
 ```bash
-docker exec -t sgaprotester_db pg_dump -U postgres -d sga_db -c > backups/manual_backup.sql
+docker exec -t sgafin_db pg_dump -U postgres -d sgafin_db -c > backups/manual_backup.sql
 ```
-*Nota: Se utiliza el usuario `postgres` y la base de datos `sga_db` según la configuración actual.*
+*Nota: Se utiliza el usuario `postgres` y la base de datos `sgafin_db` según la configuración actual.*
 
 ## 3. Restauración de la Base de Datos
 Para restaurar la base de datos desde un archivo SQL generado previamente:
@@ -28,7 +28,7 @@ Para restaurar la base de datos desde un archivo SQL generado previamente:
 1. Asegúrate de que los contenedores estén corriendo (`docker-compose up -d`).
 2. Copia el archivo de respaldo al contenedor (opcional) o inyecta el contenido directamente:
    ```bash
-   cat backups/tu_archivo_backup.sql | docker exec -i sgaprotester_db psql -U postgres -d sga_db
+   cat backups/tu_archivo_backup.sql | docker exec -i sgafin_db psql -U postgres -d sgafin_db
    ```
 
 ## 4. Automatización (Crontab)
@@ -38,5 +38,5 @@ crontab -e
 ```
 Agrega la siguiente línea para ejecutar el respaldo todos los días a las 02:00 AM:
 ```text
-0 2 * * * cd /ruta/al/proyecto/sgaproactualizado && bash scripts/backup.sh >> backups/backup.log 2>&1
+0 2 * * * cd /ruta/al/proyecto/SGAFIN && bash scripts/backup.sh >> backups/backup.log 2>&1
 ```

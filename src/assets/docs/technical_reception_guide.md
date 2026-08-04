@@ -50,7 +50,7 @@ graph LR
 ```
 
 ### 2.3 Documentación de Código Fuente
-- **Repositorio**: GitHub (Jesus-Nunez-91/sgaproactualizado).
+- **Repositorio**: GitHub (Jesus-Nunez-91/SGAFIN).
 - **Lenguaje**: TypeScript (Frontend & Backend).
 - **Framework**: Angular 17+ (SSR) & Express (Node.js).
 
