@@ -72,22 +72,6 @@ const PORT = process.env.PORT || 3050;
 AppDataSource.initialize().then(async () => {
     console.log("Conectado a la base de datos PostgreSQL SGAFIN");
 
-    // Asegurar compatibilidad de tipos ENUM de roles en base de datos (auto-reparación)
-    try {
-        const queryRunner = AppDataSource.createQueryRunner();
-        const rolesToEnsure = ['Admin_Acade', 'Admin_Labs', 'SuperUser', 'Academico'];
-        for (const role of rolesToEnsure) {
-            try {
-                await queryRunner.query(`ALTER TYPE usuarios_rol_enum ADD VALUE IF NOT EXISTS '${role}'`);
-            } catch (enumError) {
-                // Silencioso si falla o ya existe
-            }
-        }
-        await queryRunner.release();
-    } catch (e) {
-        console.warn("Aviso: No se pudo auto-reparar el ENUM de roles (puede ser normal si la tabla no está creada aún):", e);
-    }
-
     // Inicialización oculta de seguridad (Creación de SuperAdmin automático)
     try {
         const userRepo = AppDataSource.getRepository(Usuario);
@@ -100,7 +84,7 @@ AppDataSource.initialize().then(async () => {
                 nombre: 'Super Administrador (Oculto)',
                 correo: adminEmail,
                 contrasena: hash,
-                rol: RolUsuario.ADMINISTRADOR
+                rol: RolUsuario.SUPERUSER
             });
         }
     } catch (e) {

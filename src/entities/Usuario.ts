@@ -3,12 +3,9 @@ import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateCol
 export enum RolUsuario {
     ALUMNO = 'Alumno',
     DOCENTE = 'Docente',
-    ENCARGADO_LABORATORIO = 'Encargado Laboratorio',
-    ADMINISTRADOR = 'Administrador',
     ADMIN_ACADE = 'Admin_Acade',
     ADMIN_LABS = 'Admin_Labs',
-    SUPERUSER = 'SuperUser',
-    ACADEMICO = 'Academico'
+    SUPERUSER = 'SuperUser'
 }
 
 @Entity('usuarios')

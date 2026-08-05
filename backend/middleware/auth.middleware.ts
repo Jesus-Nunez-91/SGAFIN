@@ -5,8 +5,8 @@ import { RolUsuario } from '../../src/entities/Usuario';
 const JWT_SECRET = process.env.JWT_SECRET;
 
 export const ROLES = {
-    ADMIN: RolUsuario.ADMINISTRADOR,
-    LAB_ADMIN: RolUsuario.ENCARGADO_LABORATORIO,
+    ADMIN: RolUsuario.SUPERUSER,
+    LAB_ADMIN: RolUsuario.ADMIN_LABS,
     DOCENTE: RolUsuario.DOCENTE,
     ALUMNO: RolUsuario.ALUMNO
 };
