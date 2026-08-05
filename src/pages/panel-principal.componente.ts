@@ -30,344 +30,29 @@ declare var Swal: any;
               <h1 class="text-3xl md:text-4xl lg:text-6xl font-black text-white tracking-tighter leading-none" style="font-family: 'Playfair Display', serif;">
                 Hola, <span class="text-[#f06427]">{{ data.currentUser()?.nombreCompleto?.split(' ')[0] }}</span> 
               </h1>
-              <p class="text-gray-400 font-medium text-sm md:text-lg max-w-2xl leading-relaxed">Gestión Integral y Aprobación de Reservas de Laboratorios UAH.</p>
+              <p class="text-gray-400 font-medium text-sm md:text-lg max-w-2xl leading-relaxed">
+                @if (isAcade()) {
+                  Planificación y Monitoreo de Horarios Académicos UAH.
+                } @else {
+                  Gestión Integral y Aprobación de Reservas de Laboratorios UAH.
+                }
+              </p>
             </div>
             
-            <div class="flex flex-col sm:flex-row gap-4 md:gap-6">
-                <div class="bg-white/5 backdrop-blur-md px-6 md:px-10 py-4 md:py-6 rounded-3xl border border-white/10 flex items-center gap-4 md:gap-6 group/item hover:bg-white/10 transition-all">
-                   <div class="w-12 h-12 md:w-14 md:h-14 rounded-2xl bg-[#f06427] flex items-center justify-center text-white shadow-xl shadow-[#f06427]/20 group-hover/item:scale-110 transition-transform">
-                      <i class="bi bi-clock-history text-2xl md:text-3xl"></i>
-                   </div>
-                   <div class="text-left">
-                      <div class="text-[9px] md:text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1 opacity-70">Pendientes por Aprobar</div>
-                      <div class="text-xl md:text-3xl font-black text-white tracking-tight">{{ pendingReservations().length }} <span class="text-[10px] font-bold opacity-40 uppercase">Solicitudes</span></div>
-                   </div>
-                </div>
-            </div>
+            @if (!isAcade()) {
+              <div class="flex flex-col sm:flex-row gap-4 md:gap-6">
+                  <div class="bg-white/5 backdrop-blur-md px-6 md:px-10 py-4 md:py-6 rounded-3xl border border-white/10 flex items-center gap-4 md:gap-6 group/item hover:bg-white/10 transition-all">
+                     <div class="w-12 h-12 md:w-14 md:h-14 rounded-2xl bg-[#f06427] flex items-center justify-center text-white shadow-xl shadow-[#f06427]/20 group-hover/item:scale-110 transition-transform">
+                        <i class="bi bi-clock-history text-2xl md:text-3xl"></i>
+                     </div>
+                     <div class="text-left">
+                        <div class="text-[9px] md:text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1 opacity-70">Pendientes por Aprobar</div>
+                        <div class="text-xl md:text-3xl font-black text-white tracking-tight">{{ pendingReservations().length }} <span class="text-[10px] font-bold opacity-40 uppercase">Solicitudes</span></div>
+                     </div>
+                  </div>
+              </div>
+            }
           </div>
-        </div>
-
-        <!-- MAIN METRICS GRID -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-8">
-            <div class="bg-white dark:bg-[#0f0f12] p-6 md:p-8 rounded-[2rem] shadow-xl border border-gray-100 dark:border-white/5 group hover:border-[#f06427]/40 transition-all">
-                <div class="flex justify-between items-center mb-6 md:mb-8">
-                    <div class="w-10 h-10 md:w-12 md:h-12 rounded-xl bg-gray-50 dark:bg-white/5 text-gray-400 group-hover:text-[#f06427] flex items-center justify-center text-xl md:text-2xl transition-colors">
-                        <i class="bi bi-collection-fill"></i>
-                    </div>
-                    <span class="text-[8px] md:text-[9px] font-black text-gray-400 uppercase tracking-widest">Equipamiento</span>
-                </div>
-                <div class="text-[9px] md:text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Stock Disponible</div>
-                <div class="text-3xl md:text-5xl font-black text-black dark:text-white tracking-tighter">{{ totalStockUnits() | number }}</div>
-                <div class="text-[8px] md:text-[9px] font-bold text-[#f06427] mt-1 uppercase tracking-tighter">{{ data.inventory().length }} items</div>
-            </div>
-
-            <div class="bg-white dark:bg-[#0f0f12] p-8 rounded-[2rem] shadow-xl border border-gray-100 dark:border-white/5 group hover:border-[#f06427]/40 transition-all">
-                <div class="flex justify-between items-center mb-8">
-                    <div class="w-12 h-12 rounded-xl bg-amber-50 dark:bg-amber-900/20 text-amber-500 flex items-center justify-center text-2xl transition-colors">
-                        <i class="bi bi-clock-history"></i>
-                    </div>
-                    <span class="text-[9px] font-black text-amber-500 uppercase tracking-widest">Pendientes</span>
-                </div>
-                <div class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Por Aprobar</div>
-                <div class="text-5xl font-black text-black dark:text-white tracking-tighter">{{ pendingReservations().length }}</div>
-            </div>
-
-            <div class="bg-white dark:bg-[#0f0f12] p-8 rounded-[2rem] shadow-xl border border-gray-100 dark:border-white/5 group hover:border-[#f06427]/40 transition-all">
-                <div class="flex justify-between items-center mb-8">
-                    <div class="w-12 h-12 rounded-xl bg-emerald-50 dark:bg-emerald-900/20 text-emerald-500 flex items-center justify-center text-2xl transition-colors">
-                        <i class="bi bi-shield-fill-check"></i>
-                    </div>
-                    <span class="text-[9px] font-black text-emerald-500 uppercase tracking-widest">Activas</span>
-                </div>
-                <div class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">En Posesión</div>
-                <div class="text-5xl font-black text-black dark:text-white tracking-tighter">{{ activeReservations().length }}</div>
-            </div>
-
-            <div class="bg-white dark:bg-[#0f0f12] p-8 rounded-[2rem] shadow-xl border border-gray-100 dark:border-white/5 group hover:border-[#f06427]/40 transition-all">
-                <div class="flex justify-between items-center mb-8">
-                    <div class="w-12 h-12 rounded-xl bg-rose-50 dark:bg-rose-900/20 text-rose-500 flex items-center justify-center text-2xl transition-colors">
-                        <i class="bi bi-exclamation-octagon-fill"></i>
-                    </div>
-                    <span class="text-[9px] font-black text-rose-500 uppercase tracking-widest">Crítico</span>
-                </div>
-                <div class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Sin Stock</div>
-                <div class="text-5xl font-black text-black dark:text-white tracking-tighter">{{ criticalStock().length }}</div>
-            </div>
-        </div>
-
-        <!-- OPERATIONAL CORE: Tabla de Solicitudes de Reserva por Aprobar -->
-        <div class="bg-white dark:bg-[#0f0f12] rounded-[2rem] shadow-2xl border border-gray-100 dark:border-white/5 overflow-hidden">
-            <div class="p-6 md:p-8 bg-gray-50/50 dark:bg-white/5 border-b border-gray-100 dark:border-white/5 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-                <div class="flex items-center gap-3 md:gap-4">
-                   <div class="w-10 h-10 rounded-xl bg-[#f06427] text-white flex items-center justify-center shadow-lg">
-                      <i class="bi bi-clipboard-check-fill text-xl"></i>
-                   </div>
-                   <div>
-                       <h3 class="text-sm md:text-base font-black text-black dark:text-white uppercase tracking-widest">Gestión de Reservas</h3>
-                       <p class="text-[10px] text-gray-400 font-bold">Administración integral y control de préstamos de laboratorios</p>
-                   </div>
-                </div>
-
-                <!-- SELECTOR DE PESTAÑAS (TABS) -->
-                <div class="flex bg-gray-100 dark:bg-white/5 p-1 rounded-2xl border border-gray-200/50 dark:border-white/5">
-                    <button (click)="activeTab.set('pending')" [class.bg-white]="activeTab() === 'pending'" [class.dark:bg-white/10]="activeTab() === 'pending'" [class.text-black]="activeTab() === 'pending'" [class.dark:text-white]="activeTab() === 'pending'" [class.shadow-md]="activeTab() === 'pending'" class="px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest text-gray-500 hover:text-gray-900 dark:hover:text-white transition-all">
-                        Pendientes ({{ pendingReservations().length }})
-                    </button>
-                    <button (click)="activeTab.set('active')" [class.bg-white]="activeTab() === 'active'" [class.dark:bg-white/10]="activeTab() === 'active'" [class.text-black]="activeTab() === 'active'" [class.dark:text-white]="activeTab() === 'active'" [class.shadow-md]="activeTab() === 'active'" class="px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest text-gray-500 hover:text-gray-900 dark:hover:text-white transition-all">
-                        En Uso ({{ activeReservations().length }})
-                    </button>
-                    <button (click)="activeTab.set('history')" [class.bg-white]="activeTab() === 'history'" [class.dark:bg-white/10]="activeTab() === 'history'" [class.text-black]="activeTab() === 'history'" [class.dark:text-white]="activeTab() === 'history'" [class.shadow-md]="activeTab() === 'history'" class="px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest text-gray-500 hover:text-gray-900 dark:hover:text-white transition-all">
-                        Historial ({{ data.reservations().length }})
-                    </button>
-                </div>
-            </div>
-
-            <!-- CONTENIDO DE PESTAÑA: PENDIENTES -->
-            @if (activeTab() === 'pending') {
-                <div class="overflow-x-auto min-h-[300px]">
-                    <table class="w-full text-left">
-                        <thead>
-                            <tr class="text-[10px] font-black text-gray-400 uppercase tracking-widest border-b border-gray-100 dark:border-white/5 bg-gray-50/30 dark:bg-white/[0.02]">
-                                <th class="p-6 pl-10">Solicitante</th>
-                                <th class="p-6">Material Solicitado</th>
-                                <th class="p-6">Fecha y Bloque</th>
-                                <th class="p-6 text-center pr-10">Acciones de Control</th>
-                            </tr>
-                        </thead>
-                        <tbody class="divide-y divide-gray-100 dark:divide-white/5">
-                            @for (res of pendingReservations(); track res.id) {
-                                <tr class="hover:bg-blue-50/40 dark:hover:bg-white/[0.02] transition-colors group">
-                                    <td class="p-6 pl-10">
-                                        <div class="flex items-center gap-4">
-                                            <div class="w-12 h-12 rounded-2xl bg-black text-white flex items-center justify-center font-black group-hover:bg-[#f06427] transition-colors shadow-md">
-                                                {{ ((res.nombreSolicitante || res.user || '?').charAt(0).toUpperCase()) }}
-                                            </div>
-                                            <div>
-                                                <div class="text-sm font-bold text-black dark:text-white">{{ res.nombreSolicitante || res.user }}</div>
-                                                <div class="text-[9px] font-black text-[#f06427] uppercase tracking-widest mt-1">{{ res.tipoUsuario || res.userRole || 'Solicitante' }}</div>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td class="p-6">
-                                        <div class="flex items-center gap-3">
-                                            <span class="px-2.5 py-1 rounded-lg text-[9px] font-black uppercase tracking-widest bg-orange-100 text-orange-600 dark:bg-orange-950/40 dark:text-orange-300">
-                                                {{ res.tipoItem || 'EQUIPO' }}
-                                            </span>
-                                            <div class="text-xs font-black text-black dark:text-gray-200 uppercase truncate max-w-[250px]">
-                                                {{ res.detalle || getItem(res.equipoId)?.marca || ('Equipo #' + res.equipoId) }}
-                                                @if (res.cantidad) {
-                                                    <span class="text-[10px] text-gray-400 ml-1">({{ res.cantidad }} ud)</span>
-                                                }
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td class="p-6">
-                                        <div class="text-[11px] font-black text-gray-700 dark:text-gray-300 uppercase tracking-tight mb-0.5">
-                                            {{ res.fecha || (res.createdAt | date:'dd-MM-yyyy') }}
-                                        </div>
-                                        <div class="text-[10px] font-bold text-[#f06427] uppercase tracking-widest">
-                                            {{ res.bloque || (res.createdAt | date:'HH:mm HRS') }}
-                                        </div>
-                                    </td>
-                                    <td class="p-6 pr-10 text-center">
-                                        <div class="flex items-center justify-center gap-3">
-                                            <button (click)="approve(res.id)" class="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white transition-all text-[10px] font-black tracking-widest uppercase shadow-md active:scale-95 flex items-center gap-1.5">
-                                                <i class="bi bi-check-circle-fill text-sm"></i> APROBAR
-                                            </button>
-                                            <button (click)="reject(res.id)" class="px-4 py-2 rounded-xl bg-rose-600 hover:bg-rose-700 text-white transition-all text-[10px] font-black tracking-widest uppercase shadow-md active:scale-95 flex items-center gap-1.5">
-                                                <i class="bi bi-x-circle-fill text-sm"></i> RECHAZAR
-                                            </button>
-                                        </div>
-                                    </td>
-                                </tr>
-                            }
-                            @if (pendingReservations().length === 0) {
-                                <tr>
-                                    <td colspan="4" class="p-16 text-center">
-                                        <div class="w-16 h-16 bg-emerald-50 dark:bg-emerald-950/20 text-emerald-500 rounded-full flex items-center justify-center mx-auto mb-4 border border-emerald-200 dark:border-emerald-900">
-                                            <i class="bi bi-check2-all text-3xl"></i>
-                                        </div>
-                                        <h4 class="font-black text-xs uppercase tracking-widest text-gray-700 dark:text-gray-300">Todas las solicitudes al día</h4>
-                                        <p class="text-[10px] text-gray-400 mt-1 font-semibold">No hay préstamos ni reservas pendientes de aprobación en este momento.</p>
-                                    </td>
-                                </tr>
-                            }
-                        </tbody>
-                    </table>
-                </div>
-            }
-
-            <!-- CONTENIDO DE PESTAÑA: EN USO -->
-            @if (activeTab() === 'active') {
-                <div class="overflow-x-auto min-h-[300px]">
-                    <table class="w-full text-left">
-                        <thead>
-                            <tr class="text-[10px] font-black text-gray-400 uppercase tracking-widest border-b border-gray-100 dark:border-white/5 bg-gray-50/30 dark:bg-white/[0.02]">
-                                <th class="p-6 pl-10">Solicitante</th>
-                                <th class="p-6">Material en Posesión</th>
-                                <th class="p-6">Fecha y Bloque</th>
-                                <th class="p-6 text-center pr-10">Acciones de Control</th>
-                            </tr>
-                        </thead>
-                        <tbody class="divide-y divide-gray-100 dark:divide-white/5">
-                            @for (res of activeReservations(); track res.id) {
-                                <tr class="hover:bg-blue-50/40 dark:hover:bg-white/[0.02] transition-colors group">
-                                    <td class="p-6 pl-10">
-                                        <div class="flex items-center gap-4">
-                                            <div class="w-12 h-12 rounded-2xl bg-[#003366] text-white flex items-center justify-center font-black group-hover:bg-[#f06427] transition-colors shadow-md">
-                                                {{ ((res.nombreSolicitante || res.user || '?').charAt(0).toUpperCase()) }}
-                                            </div>
-                                            <div>
-                                                <div class="text-sm font-bold text-black dark:text-white">{{ res.nombreSolicitante || res.user }}</div>
-                                                <div class="text-[9px] font-black text-[#f06427] uppercase tracking-widest mt-1">{{ res.tipoUsuario || res.userRole || 'Solicitante' }}</div>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td class="p-6">
-                                        <div class="flex items-center gap-3">
-                                            <span class="px-2.5 py-1 rounded-lg text-[9px] font-black uppercase tracking-widest bg-emerald-100 text-emerald-600 dark:bg-emerald-950/40 dark:text-emerald-300">
-                                                {{ res.tipoItem || 'EQUIPO' }}
-                                            </span>
-                                            <div class="text-xs font-black text-black dark:text-gray-200 uppercase truncate max-w-[250px]">
-                                                {{ res.detalle || getItem(res.equipoId)?.marca || ('Equipo #' + res.equipoId) }}
-                                                @if (res.cantidad) {
-                                                    <span class="text-[10px] text-gray-400 ml-1">({{ res.cantidad }} ud)</span>
-                                                }
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td class="p-6">
-                                        <div class="text-[11px] font-black text-gray-700 dark:text-gray-300 uppercase tracking-tight mb-0.5">
-                                            {{ res.fecha || (res.createdAt | date:'dd-MM-yyyy') }}
-                                        </div>
-                                        <div class="text-[10px] font-bold text-[#f06427] uppercase tracking-widest">
-                                            {{ res.bloque || (res.createdAt | date:'HH:mm HRS') }}
-                                        </div>
-                                    </td>
-                                    <td class="p-6 pr-10 text-center">
-                                        <div class="flex items-center justify-center gap-3">
-                                            <button (click)="markAsReturned(res.id, res.cantidad)" class="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white transition-all text-[10px] font-black tracking-widest uppercase shadow-md active:scale-95 flex items-center gap-1.5">
-                                                <i class="bi bi-arrow-down-left-circle-fill text-sm"></i> DEVOLVER
-                                            </button>
-                                            <button (click)="cancelReservation(res.id)" class="px-4 py-2 rounded-xl bg-rose-600 hover:bg-rose-700 text-white transition-all text-[10px] font-black tracking-widest uppercase shadow-md active:scale-95 flex items-center gap-1.5">
-                                                <i class="bi bi-x-circle-fill text-sm"></i> CANCELAR
-                                            </button>
-                                        </div>
-                                    </td>
-                                </tr>
-                            }
-                            @if (activeReservations().length === 0) {
-                                <tr>
-                                    <td colspan="4" class="p-16 text-center">
-                                        <div class="w-16 h-16 bg-gray-50 dark:bg-white/5 text-gray-400 rounded-full flex items-center justify-center mx-auto mb-4 border border-gray-200 dark:border-white/10">
-                                            <i class="bi bi-shield-slash text-3xl"></i>
-                                        </div>
-                                        <h4 class="font-black text-xs uppercase tracking-widest text-gray-700 dark:text-gray-300">Sin materiales activos</h4>
-                                        <p class="text-[10px] text-gray-400 mt-1 font-semibold">No hay ningún material ni laboratorio en uso o posesión actualmente.</p>
-                                    </td>
-                                </tr>
-                            }
-                        </tbody>
-                    </table>
-                </div>
-            }
-
-            <!-- CONTENIDO DE PESTAÑA: HISTORIAL COMPLETO -->
-            @if (activeTab() === 'history') {
-                <div class="overflow-x-auto min-h-[300px]">
-                    <table class="w-full text-left">
-                        <thead>
-                            <tr class="text-[10px] font-black text-gray-400 uppercase tracking-widest border-b border-gray-100 dark:border-white/5 bg-gray-50/30 dark:bg-white/[0.02]">
-                                <th class="p-6 pl-10">Solicitante</th>
-                                <th class="p-6">Material</th>
-                                <th class="p-6">Fecha y Bloque</th>
-                                <th class="p-6 text-center">Estado</th>
-                                <th class="p-6 text-center pr-10">Acción</th>
-                            </tr>
-                        </thead>
-                        <tbody class="divide-y divide-gray-100 dark:divide-white/5">
-                            @for (res of data.reservations(); track res.id) {
-                                <tr class="hover:bg-blue-50/40 dark:hover:bg-white/[0.02] transition-colors group">
-                                    <td class="p-6 pl-10">
-                                        <div class="flex items-center gap-4">
-                                            <div class="w-12 h-12 rounded-2xl bg-gray-100 dark:bg-white/10 text-gray-700 dark:text-gray-300 flex items-center justify-center font-black group-hover:bg-[#f06427] group-hover:text-white transition-colors shadow-md">
-                                                {{ ((res.nombreSolicitante || res.user || '?').charAt(0).toUpperCase()) }}
-                                            </div>
-                                            <div>
-                                                <div class="text-sm font-bold text-black dark:text-white">{{ res.nombreSolicitante || res.user }}</div>
-                                                <div class="text-[9px] font-black text-[#f06427] uppercase tracking-widest mt-1">{{ res.tipoUsuario || res.userRole || 'Solicitante' }}</div>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td class="p-6">
-                                        <div class="flex items-center gap-3">
-                                            <span class="px-2.5 py-1 rounded-lg text-[9px] font-black uppercase tracking-widest bg-gray-100 text-gray-600 dark:bg-white/5 dark:text-gray-300">
-                                                {{ res.tipoItem || 'EQUIPO' }}
-                                            </span>
-                                            <div class="text-xs font-black text-black dark:text-gray-200 uppercase truncate max-w-[250px]">
-                                                {{ res.detalle || getItem(res.equipoId)?.marca || ('Equipo #' + res.equipoId) }}
-                                                @if (res.cantidad) {
-                                                    <span class="text-[10px] text-gray-400 ml-1">({{ res.cantidad }} ud)</span>
-                                                }
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td class="p-6">
-                                        <div class="text-[11px] font-black text-gray-700 dark:text-gray-300 uppercase tracking-tight mb-0.5">
-                                            {{ res.fecha || (res.createdAt | date:'dd-MM-yyyy') }}
-                                        </div>
-                                        <div class="text-[10px] font-bold text-[#f06427] uppercase tracking-widest">
-                                            {{ res.bloque || (res.createdAt | date:'HH:mm HRS') }}
-                                        </div>
-                                    </td>
-                                    <td class="p-6 text-center">
-                                        @if (res.aprobada && res.devuelto >= res.cantidad) {
-                                            <span class="inline-flex items-center gap-1 px-3 py-1 rounded-xl text-[9px] font-black uppercase tracking-widest bg-emerald-100 text-emerald-800 dark:bg-emerald-950/40 dark:text-emerald-300 border border-emerald-200">
-                                                <i class="bi bi-check-circle-fill"></i> DEVUELTO
-                                            </span>
-                                        } @else if (res.aprobada && res.devuelto < res.cantidad) {
-                                            <span class="inline-flex items-center gap-1 px-3 py-1 rounded-xl text-[9px] font-black uppercase tracking-widest bg-blue-100 text-blue-800 dark:bg-blue-950/40 dark:text-blue-300 border border-blue-200">
-                                                <i class="bi bi-shield-fill-check"></i> EN POSESIÓN
-                                            </span>
-                                        } @else if (res.rechazada) {
-                                            <div class="flex flex-col items-center gap-1">
-                                                <span class="inline-flex items-center gap-1 px-3 py-1 rounded-xl text-[9px] font-black uppercase tracking-widest bg-rose-100 text-rose-800 dark:bg-rose-950/40 dark:text-rose-300 border border-rose-200">
-                                                    <i class="bi bi-x-circle-fill"></i> RECHAZADA
-                                                </span>
-                                                @if (res.motivoRechazo) {
-                                                    <span class="text-[8px] text-rose-600 dark:text-rose-400 font-bold max-w-[150px] truncate" title="{{ res.motivoRechazo }}">
-                                                        {{ res.motivoRechazo }}
-                                                    </span>
-                                                }
-                                            </div>
-                                        } @else {
-                                            <span class="inline-flex items-center gap-1 px-3 py-1 rounded-xl text-[9px] font-black uppercase tracking-widest bg-amber-100 text-amber-800 dark:bg-amber-950/40 dark:text-amber-300 border border-amber-200">
-                                                <i class="bi bi-clock-history"></i> PENDIENTE
-                                            </span>
-                                        }
-                                    </td>
-                                    <td class="p-6 pr-10 text-center">
-                                        <button (click)="deleteReservation(res.id)" class="px-3 py-2 rounded-xl bg-gray-100 dark:bg-white/5 hover:bg-rose-600 dark:hover:bg-rose-600 hover:text-white dark:hover:text-white text-gray-500 dark:text-gray-400 transition-all text-[9px] font-black tracking-widest uppercase active:scale-95">
-                                            <i class="bi bi-trash3-fill"></i>
-                                        </button>
-                                    </td>
-                                </tr>
-                            }
-                            @if (data.reservations().length === 0) {
-                                <tr>
-                                    <td colspan="5" class="p-16 text-center">
-                                        <div class="w-16 h-16 bg-gray-50 dark:bg-white/5 text-gray-400 rounded-full flex items-center justify-center mx-auto mb-4 border border-gray-200 dark:border-white/10">
-                                            <i class="bi bi-journal-x text-3xl"></i>
-                                        </div>
-                                        <h4 class="font-black text-xs uppercase tracking-widest text-gray-700 dark:text-gray-300">Historial vacío</h4>
-                                        <p class="text-[10px] text-gray-400 mt-1 font-semibold">No se registran transacciones históricas en el sistema.</p>
-                                    </td>
-                                </tr>
-                            }
-                        </tbody>
-                    </table>
-                </div>
-            }
         </div>
 
         <!-- MONITOREO DE CLASES EN TIEMPO REAL (5 LABORATORIOS EN VIVO) -->
@@ -691,6 +376,11 @@ export class ComponentePanelPrincipal implements OnInit {
     isStaff = computed(() => {
         const role = this.data.currentUser()?.rol;
         return ['Admin_Labs', 'SuperUser', 'Administrador', 'Encargado Laboratorio', 'Admin_Acade'].includes(role || '');
+    });
+
+    isAcade = computed(() => {
+        const role = this.data.currentUser()?.rol;
+        return role === 'Admin_Acade';
     });
 
     totalStockUnits = computed(() => {

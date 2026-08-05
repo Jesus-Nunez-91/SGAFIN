@@ -86,7 +86,7 @@ export class ComponenteBienvenida implements OnInit {
     }
 
     const role = user.rol;
-    const isAcad = ['Academico', 'Docente', 'Alumno'].includes(role);
+    const isAcad = ['Admin_Acade', 'Academico', 'Docente', 'Alumno'].includes(role);
 
     if (role === 'SuperUser') {
       this.router.navigate(['/panel-principal']);

@@ -25,6 +25,21 @@ export class Usuario {
     @Column({ type: 'enum', enum: RolUsuario, default: RolUsuario.ALUMNO })
     rol: RolUsuario;
 
+    @Column({ nullable: true, length: 15 })
+    rut: string;
+
+    @Column({ nullable: true, length: 100 })
+    carrera: string;
+
+    @Column({ nullable: true, type: 'int' })
+    anioIngreso: number;
+
+    @Column({ default: true })
+    primerIngreso: boolean;
+
+    @Column({ default: false })
+    pendienteAprobacion: boolean;
+
     @Column({ default: true })
     activo: boolean;
 

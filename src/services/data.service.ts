@@ -17,6 +17,8 @@ export interface User {
   permisos?: any;
   carrera?: string;
   anioIngreso?: number;
+  primerIngreso?: boolean;
+  pendienteAprobacion?: boolean;
 }
 
 export interface InventoryItem {
@@ -968,6 +970,36 @@ export class DataService {
     }
   }
 
+  async personalizeProfile(profileData: any): Promise<boolean> {
+    if (!this.token()) return false;
+    try {
+      const res = await this.apiFetch('/api/usuarios/personalizar', {
+        method: 'POST',
+        body: JSON.stringify(profileData)
+      });
+      return res.ok;
+    } catch (e) {
+      console.error("Error al personalizar perfil", e);
+      return false;
+    }
+  }
+
+  async approveUser(id: number): Promise<boolean> {
+    if (!this.token()) return false;
+    try {
+      const res = await this.apiFetch(`/api/usuarios/${id}/aprobar`, {
+        method: 'POST'
+      });
+      if (res.ok) {
+        await this.fetchUsers();
+      }
+      return res.ok;
+    } catch (e) {
+      console.error("Error al aprobar usuario", e);
+      return false;
+    }
+  }
+
   // --- GESTIÓN DE HORARIOS API ---
   async fetchSchedules() {
     if (!this.token()) return;
@@ -1060,13 +1092,13 @@ export class DataService {
       const user = JSON.parse(session);
       this.token.set(token);
       this.currentUser.set(user);
-      if (user.rol === 'Admin_Labs' || user.rol === 'Admin_Acade' || user.rol === 'SuperUser') {
+      if (user.rol === 'SuperUser') {
         this.fetchUsers();
       }
     }
   }
 
-  async login(correo: string, pass: string, recaptchaToken?: string): Promise<boolean> {
+  async login(correo: string, pass: string, recaptchaToken?: string): Promise<{ success: boolean; requierePersonalizacion?: boolean; pendienteAprobacion?: boolean; message?: string }> {
     try {
       const res = await this.apiFetch('/api/auth/login', {
         method: 'POST',
@@ -1079,14 +1111,12 @@ export class DataService {
         let token = data.token;
         
         // --- ADAPTACIÓN AL NUEVO BACKEND (SGAFIN) ---
-        // El backend de SGAFIN devuelve 'nombre', pero el frontend antiguo usa 'nombreCompleto'
         if (user && !user.nombreCompleto && user.nombre) {
             user.nombreCompleto = user.nombre;
         }
         if (user && !user.rut) {
             user.rut = '00.000.000-0'; // Fallback
         }
-        // Adaptación de roles
         if (user && user.rol === 'Administrador') {
             user.rol = 'SuperUser';
         } else if (user && user.rol === 'Encargado Laboratorio') {
@@ -1098,27 +1128,31 @@ export class DataService {
         sessionStorage.setItem('uah_user', JSON.stringify(user));
         this.save();
 
-        if (user.rol === 'Admin_Labs' || user.rol === 'Admin_Acade' || user.rol === 'SuperUser') {
+        if (data.requierePersonalizacion) {
+          return { success: true, requierePersonalizacion: true };
+        }
+
+        if (user.rol === 'SuperUser') {
           this.fetchUsers();
           this.fetchAuditLogs();
         }
         
-        // Carga inmediata de datos operativos para todos los roles
         this.fetchSchedules();
         this.fetchInventory();
-        // this.fetchProjects();
-        // this.fetchWiki();
-        // this.fetchBitacora();
         this.fetchReservations();
-        // this.fetchSystemSettings();
-        // this.fetchNotifications();
 
-        return true;
+        return { success: true };
+      } else {
+        const errData = await res.json().catch(() => ({}));
+        if (res.status === 403 && errData.pendienteAprobacion) {
+          return { success: false, pendienteAprobacion: true, message: errData.message };
+        }
+        return { success: false, message: errData.message || 'Credenciales inválidas' };
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error en login API", error);
+      return { success: false, message: 'Error de conexión con el servidor' };
     }
-    return false;
   }
 
   /**

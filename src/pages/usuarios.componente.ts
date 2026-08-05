@@ -225,29 +225,41 @@ declare const XLSX: any;
                                       </div>
                                   </td>
                                   <td class="p-5">
-                                     <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-bold uppercase border" 
-                                           [ngClass]="{
-                                              'bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-300 border-red-100 dark:border-red-900': u.rol === 'SuperUser',
-                                              'bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 border-blue-100 dark:border-blue-900': u.rol === 'Admin_Labs',
-                                              'bg-emerald-50 dark:bg-emerald-900/20 text-emerald-700 dark:text-emerald-300 border-emerald-100 dark:border-emerald-900': u.rol === 'Admin_Acade',
-                                              'bg-purple-50 dark:bg-purple-900/20 text-purple-700 dark:text-purple-300 border-purple-100 dark:border-purple-900': u.rol === 'Academico',
-                                              'bg-amber-50 dark:bg-amber-900/20 text-amber-700 dark:text-amber-300 border-amber-100 dark:border-amber-900': u.rol === 'Docente',
-                                              'bg-gray-50 dark:bg-gray-700 text-gray-600 dark:text-gray-400 border-gray-100 dark:border-gray-600': u.rol === 'Alumno'
-                                            }">
-                                        <span class="w-1.5 h-1.5 rounded-full" 
-                                              [ngClass]="{
-                                                'bg-red-500': u.rol === 'SuperUser',
-                                                'bg-blue-500': u.rol === 'Admin_Labs',
-                                                'bg-emerald-500': u.rol === 'Admin_Acade',
-                                                'bg-purple-500': u.rol === 'Academico',
-                                                'bg-amber-500': u.rol === 'Docente',
-                                                'bg-gray-400': u.rol === 'Alumno'
-                                              }"></span>
-                                        {{ u.rol }}
-                                     </span>
+                                     <div class="flex flex-col gap-1.5 items-start">
+                                       <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-bold uppercase border" 
+                                             [ngClass]="{
+                                                'bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-300 border-red-100 dark:border-red-900': u.rol === 'SuperUser',
+                                                'bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 border-blue-100 dark:border-blue-900': u.rol === 'Admin_Labs',
+                                                'bg-emerald-50 dark:bg-emerald-900/20 text-emerald-700 dark:text-emerald-300 border-emerald-100 dark:border-emerald-900': u.rol === 'Admin_Acade',
+                                                'bg-purple-50 dark:bg-purple-900/20 text-purple-700 dark:text-purple-300 border-purple-100 dark:border-purple-900': u.rol === 'Academico',
+                                                'bg-amber-50 dark:bg-amber-900/20 text-amber-700 dark:text-amber-300 border-amber-100 dark:border-amber-900': u.rol === 'Docente',
+                                                'bg-gray-50 dark:bg-gray-700 text-gray-600 dark:text-gray-400 border-gray-100 dark:border-gray-600': u.rol === 'Alumno'
+                                              }">
+                                          <span class="w-1.5 h-1.5 rounded-full" 
+                                                [ngClass]="{
+                                                  'bg-red-500': u.rol === 'SuperUser',
+                                                  'bg-blue-500': u.rol === 'Admin_Labs',
+                                                  'bg-emerald-500': u.rol === 'Admin_Acade',
+                                                  'bg-purple-500': u.rol === 'Academico',
+                                                  'bg-amber-500': u.rol === 'Docente',
+                                                  'bg-gray-400': u.rol === 'Alumno'
+                                                }"></span>
+                                          {{ u.rol }}
+                                       </span>
+                                       @if (u.pendienteAprobacion) {
+                                         <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[9px] font-black uppercase bg-amber-100 text-amber-800 border border-amber-200">
+                                            <i class="bi bi-clock-fill"></i> Pendiente
+                                         </span>
+                                       }
+                                     </div>
                                   </td>
                                   <td class="p-5 text-center">
                                      <div class="flex items-center justify-center gap-2 opacity-60 group-hover:opacity-100 transition-opacity">
+                                         @if (u.pendienteAprobacion) {
+                                             <button (click)="approve(u)" class="w-8 h-8 rounded-lg bg-green-500 text-white hover:bg-green-600 transition-all flex items-center justify-center shadow-sm" title="Aprobar Usuario">
+                                                <i class="bi bi-check-lg"></i>
+                                             </button>
+                                         }
                                          <button (click)="edit(u)" class="w-8 h-8 rounded-lg bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 transition-all flex items-center justify-center shadow-sm" title="Editar">
                                             <i class="bi bi-pencil-square"></i>
                                          </button>
@@ -421,6 +433,43 @@ export class ComponenteUsuarios {
                 title: 'uah-premium-title'
               }
             });
+         }
+      });
+   }
+
+   async approve(u: User) {
+      Swal.fire({
+         title: '¿Aprobar Usuario?',
+         text: `Se habilitará el acceso completo al sistema para ${u.nombreCompleto}.`,
+         icon: 'question',
+         showCancelButton: true,
+         confirmButtonColor: '#28a745',
+         cancelButtonColor: '#003366',
+         confirmButtonText: 'Sí, aprobar',
+         cancelButtonText: 'Cancelar',
+         customClass: {
+           popup: 'uah-premium-popup',
+           title: 'uah-premium-title',
+           confirmButton: 'uah-premium-confirm',
+           cancelButton: 'uah-premium-cancel'
+         },
+         buttonsStyling: false
+      }).then(async (result: any) => {
+         if (result.isConfirmed) {
+            const ok = await this.data.approveUser(u.id);
+            if (ok) {
+               Swal.fire({ 
+                 icon: 'success', 
+                 title: 'Aprobado', 
+                 text: 'El usuario ha sido aprobado con éxito.', 
+                 timer: 1500, 
+                 showConfirmButton: false,
+                 customClass: {
+                   popup: 'uah-premium-popup',
+                   title: 'uah-premium-title'
+                 }
+               });
+            }
          }
       });
    }

@@ -260,14 +260,94 @@ export class ComponenteInicioSesion implements OnInit {
     }
   }
 
+  async openPersonalizationModal() {
+    const { value: formValues } = await Swal.fire({
+      title: '<h2 class="text-black font-black uppercase tracking-tighter text-lg">Personaliza tu Perfil</h2>',
+      html: `
+        <div class="text-left space-y-4 pt-4 px-2">
+          <p class="text-[10px] text-gray-500 mb-6 border-l-4 border-[#f06427] pl-3 font-bold uppercase tracking-wider">Es tu primer inicio de sesión. Por favor, completa tus datos reales.</p>
+          
+          <div>
+            <label class="text-[9px] font-black text-gray-400 uppercase ml-1 block mb-1">Nombre Completo</label>
+            <input id="pers-name" class="swal2-input !m-0 !w-full !rounded-xl !text-sm !border-2 !border-gray-50 !bg-gray-50 focus:!border-[#f06427] !h-12" placeholder="Juan Pérez">
+          </div>
+
+          <div>
+            <label class="text-[9px] font-black text-gray-400 uppercase ml-1 block mb-1">RUT</label>
+            <input id="pers-rut" class="swal2-input !m-0 !w-full !rounded-xl !text-sm !border-2 !border-gray-50 !bg-gray-50 focus:!border-[#f06427] !h-12" placeholder="12.345.678-9">
+          </div>
+
+          <div class="grid grid-cols-2 gap-4">
+             <div>
+                <label class="text-[9px] font-black text-gray-400 uppercase ml-1 block mb-1">Carrera</label>
+                <input id="pers-career" class="swal2-input !m-0 !w-full !rounded-xl !text-sm !border-2 !border-gray-50 !bg-gray-50 focus:!border-[#f06427] !h-12" placeholder="Ej: Informática">
+             </div>
+             <div>
+                <label class="text-[9px] font-black text-gray-400 uppercase ml-1 block mb-1">Año de Ingreso</label>
+                <input id="pers-year" type="number" class="swal2-input !m-0 !w-full !rounded-xl !text-sm !border-2 !border-gray-50 !bg-gray-50 focus:!border-[#f06427] !h-12" placeholder="2024">
+             </div>
+          </div>
+
+          <div>
+            <label class="text-[9px] font-black text-[#f06427] uppercase ml-1 block mb-1">Nueva Contraseña</label>
+            <input id="pers-pass" type="password" class="swal2-input !m-0 !w-full !rounded-xl !text-sm !border-2 !border-[#f06427]/10 !bg-orange-50/30 focus:!border-[#f06427] !h-12" placeholder="Ingresa una contraseña segura">
+          </div>
+        </div>
+      `,
+      showCancelButton: false,
+      allowOutsideClick: false,
+      allowEscapeKey: false,
+      confirmButtonText: 'Guardar y Enviar a Aprobación',
+      confirmButtonColor: '#F37021',
+      preConfirm: () => {
+        const nombre = (document.getElementById('pers-name') as HTMLInputElement).value;
+        const rut = (document.getElementById('pers-rut') as HTMLInputElement).value;
+        const carrera = (document.getElementById('pers-career') as HTMLInputElement).value;
+        const anioIngreso = (document.getElementById('pers-year') as HTMLInputElement).value;
+        const password = (document.getElementById('pers-pass') as HTMLInputElement).value;
+
+        if (!nombre || !rut || !carrera || !anioIngreso || !password) {
+          Swal.showValidationMessage('Todos los campos son obligatorios');
+          return false;
+        }
+        return { nombre, rut, carrera, anioIngreso, password };
+      }
+    });
+
+    if (formValues) {
+      const ok = await this.auth.personalizeProfile(formValues);
+      if (ok) {
+        await Swal.fire({
+          icon: 'success',
+          title: 'Perfil Guardado',
+          text: 'Tus datos han sido guardados. Tu cuenta ahora está en revisión por el SuperAdministrador.',
+          confirmButtonColor: '#003366'
+        });
+      } else {
+        await Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'No se pudo guardar la personalización. Intente nuevamente.',
+          confirmButtonColor: '#003366'
+        });
+      }
+      this.auth.logout();
+    }
+  }
+
   /**
    * Maneja el evento de envío del formulario de login.
    * @param e Evento de formulario.
    */
   async onLogin(e: Event) {
     e.preventDefault();
-    const success = await this.auth.login(this.email(), this.pass(), this.recaptchaToken());
-    if (success) {
+    const result = await this.auth.login(this.email(), this.pass(), this.recaptchaToken());
+    if (result.success) {
+      if (result.requierePersonalizacion) {
+        await this.openPersonalizationModal();
+        return;
+      }
+
       // Notificación de éxito
       Swal.fire({
         icon: 'success',
@@ -280,13 +360,21 @@ export class ComponenteInicioSesion implements OnInit {
       });
       this.router.navigate(['/bienvenida']);
     } else {
-      // Notificación de error
-      Swal.fire({
-        icon: 'error',
-        title: 'Error',
-        text: 'Credenciales inválidas o error de conexión',
-        confirmButtonColor: '#003366'
-      });
+      if (result.pendienteAprobacion) {
+        Swal.fire({
+          icon: 'warning',
+          title: 'Cuenta Pendiente',
+          text: result.message || 'Tu cuenta está en revisión por el SuperAdministrador.',
+          confirmButtonColor: '#003366'
+        });
+      } else {
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: result.message || 'Credenciales inválidas o error de conexión',
+          confirmButtonColor: '#003366'
+        });
+      }
     }
   }
 }

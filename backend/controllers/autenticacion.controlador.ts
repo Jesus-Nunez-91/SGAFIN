@@ -12,14 +12,22 @@ export const login = async (req: Request, res: Response) => {
         const { correo, contrasena } = req.body;
         const userRepo = AppDataSource.getRepository(Usuario);
         
-        const user = await userRepo.findOne({ where: { correo, activo: true } });
+        const user = await userRepo.findOne({ where: { correo } });
         if (!user) {
-            return res.status(401).json({ message: 'Credenciales inválidas o usuario inactivo' });
+            return res.status(401).json({ message: 'Credenciales inválidas' });
+        }
+
+        if (!user.activo) {
+            return res.status(401).json({ message: 'Usuario inactivo o suspendido' });
         }
 
         const isValid = await bcrypt.compare(contrasena, user.contrasena);
         if (!isValid) {
             return res.status(401).json({ message: 'Credenciales inválidas' });
+        }
+
+        if (user.pendienteAprobacion && user.rol !== 'SuperUser') {
+            return res.status(403).json({ message: 'Tu cuenta está pendiente de aprobación por el Administrador.', pendienteAprobacion: true });
         }
 
         if (!JWT_SECRET) return res.status(500).json({ msg: 'Falta JWT_SECRET' });
@@ -37,6 +45,10 @@ export const login = async (req: Request, res: Response) => {
             modulo: 'Autenticación',
             detalles: 'Inicio de sesión exitoso'
         }));
+
+        if (user.primerIngreso && user.rol !== 'SuperUser') {
+            return res.json({ requierePersonalizacion: true, token, user: { id: user.id, nombre: user.nombre, correo: user.correo, rol: user.rol } });
+        }
 
         res.json({ token, user: { id: user.id, nombre: user.nombre, correo: user.correo, rol: user.rol } });
     } catch (error: any) {
